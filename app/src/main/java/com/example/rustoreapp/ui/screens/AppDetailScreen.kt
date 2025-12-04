@@ -1,7 +1,9 @@
 package com.example.rustoreapp.ui.screens
 
+import android.app.DownloadManager
 import android.content.Context
-import android.content.Intent
+import android.net.Uri
+import android.os.Environment
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -34,7 +36,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,14 +45,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat
 import coil.compose.AsyncImage
 import com.example.rustoreapp.data.models.App
 import com.example.rustoreapp.ui.components.CategoryChip
-import com.example.rustoreapp.utils.AppInstaller
-import com.example.rustoreapp.utils.DownloadService
-import kotlinx.coroutines.launch
-import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,7 +57,6 @@ fun AppDetailScreen(
     onScreenshotClick: (Int) -> Unit
 ) {
     val context = LocalContext.current
-    val scope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
 
     Scaffold(
@@ -120,28 +115,28 @@ fun AppDetailScreen(
                 Button(
                     onClick = {
                         app.apkUrl?.let { url ->
-                            if (url.startsWith("http")) {
-                                scope.launch {
-                                    // 1. Проверяем разрешение на установку
-                                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                                        AppInstaller.checkAndRequestInstallPermission(
-                                            context as android.app.Activity,
-                                            1001
-                                        )
-                                    }
+                            if (url.startsWith("http") || url.startsWith("https")) {
+                                // Используем простой DownloadManager без сервиса
+                                val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
 
-                                    // 2. Запускаем сервис загрузки
-                                    val intent = Intent(context, DownloadService::class.java)
-                                    intent.putExtra(DownloadService.EXTRA_URL, url)
-                                    intent.putExtra(DownloadService.EXTRA_APP_NAME, app.name)
-                                    ContextCompat.startForegroundService(context, intent)
+                                val request = DownloadManager.Request(Uri.parse(url))
+                                    .setTitle("Загрузка: ${app.name}")
+                                    .setDescription("Загрузка APK файла")
+                                    .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                                    .setDestinationInExternalPublicDir(
+                                        Environment.DIRECTORY_DOWNLOADS,
+                                        "${app.name.replace(" ", "_")}.apk"
+                                    )
+                                    .setAllowedOverMetered(true)
+                                    .setAllowedOverRoaming(true)
 
-                                    Toast.makeText(
-                                        context,
-                                        "Загрузка началась. Проверьте уведомления.",
-                                        Toast.LENGTH_LONG
-                                    ).show()
-                                }
+                                downloadManager.enqueue(request)
+
+                                Toast.makeText(
+                                    context,
+                                    "Загрузка началась. Проверьте уведомления.",
+                                    Toast.LENGTH_LONG
+                                ).show()
                             } else {
                                 Toast.makeText(
                                     context,
@@ -170,7 +165,6 @@ fun AppDetailScreen(
                 }
             }
 
-            // ... остальной код карточки приложения (без изменений) ...
             // Основная информация
             Column(
                 modifier = Modifier

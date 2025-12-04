@@ -46,6 +46,8 @@ fun NavGraph(
 
     val onboardingCompleted by viewModel.onboardingCompleted.collectAsState()
 
+    // УБЕРИТЕ ЭТОТ LaunchedEffect - он автоматически переходит на главный экран!
+    /*
     LaunchedEffect(Unit) {
         if (!onboardingCompleted) {
             navController.navigate(Screen.Onboarding.route) {
@@ -53,9 +55,11 @@ fun NavGraph(
             }
         }
     }
+    */
 
     NavHost(
         navController = navController,
+        // Если onboardingCompleted = true, сразу идет AppList, иначе Onboarding
         startDestination = if (onboardingCompleted) Screen.AppList.route else Screen.Onboarding.route
     ) {
         // Онбординг
@@ -64,6 +68,7 @@ fun NavGraph(
                 onContinueClick = {
                     viewModel.completeOnboarding()
                     navController.navigate(Screen.AppList.route) {
+                        // Убираем Onboarding из стека навигации
                         popUpTo(Screen.Onboarding.route) { inclusive = true }
                     }
                 }

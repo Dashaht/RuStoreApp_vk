@@ -21,6 +21,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.rustoreapp.R
+import kotlinx.coroutines.delay
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun OnboardingScreen(
@@ -69,9 +72,9 @@ fun OnboardingScreen(
 
         Spacer(modifier = Modifier.height(48.dp))
 
-        // Кнопка "Продолжить"
+        // Кнопка "Продолжить" - БЕЗ задержки (по желанию)
         Button(
-            onClick = onContinueClick,
+            onClick = onContinueClick, // ← Прямой вызов без задержки
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp)
