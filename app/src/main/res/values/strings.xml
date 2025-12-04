@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">RuStore</string>
+
+    <!-- Onboarding -->
+    <string name="welcome_title">Добро пожаловать в RuStore!</string>
+    <string name="welcome_subtitle">Официальный российский магазин приложений для Android. Безопасно, удобно и с любовью к отечественным разработчикам.</string>
+    <string name="get_started">Перейти в витрину</string>
+
+    <!-- App List -->
+    <string name="all_apps">Все приложения</string>
+    <string name="categories">Категории</string>
+    <string name="search">Поиск</string>
+
+    <!-- App Detail -->
+    <string name="install">Установить</string>
+    <string name="description">Описание</string>
+    <string name="screenshots">Скриншоты</string>
+    <string name="back">Назад</string>
+
+    <!-- Categories -->
+    <string name="finance">Финансы</string>
+    <string name="tools">Инструменты</string>
+    <string name="games">Игры</string>
+    <string name="government">Государственные</string>
+    <string name="transport">Транспорт</string>
+</resources>
